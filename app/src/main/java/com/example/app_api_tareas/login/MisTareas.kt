@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.app_api_tareas.model.EstadoTarea
-import com.example.app_api_tareas.model.TareaResponse
+import com.example.app_api_tareas.model.TareaResponseDTO
 import com.example.app_api_tareas.retrofit.RetrofitClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -48,7 +48,7 @@ fun MisTareas(modifier: Modifier, navController: NavController) {
     val username = sessionManager.getUsername()
     val token = sessionManager.getToken()
 
-    var tareas by rememberSaveable { mutableStateOf<List<TareaResponse>>(emptyList()) }
+    var tareas by rememberSaveable { mutableStateOf<List<TareaResponseDTO>>(emptyList()) }
     var isLoading by rememberSaveable { mutableStateOf(false) }
     var errorMessage by rememberSaveable { mutableStateOf<String?>(null) }
 
@@ -56,7 +56,7 @@ fun MisTareas(modifier: Modifier, navController: NavController) {
 
     // Función para cargar las tareas
     fun cargarTareas() {
-        scope.launch {
+        scope.launch(Dispatchers.IO) {
             if (username != null && token != null) {
                 isLoading = true
                 errorMessage = null
@@ -160,7 +160,7 @@ fun MisTareas(modifier: Modifier, navController: NavController) {
 
 @Composable
 fun ListaDeTareas(
-    tareas: List<TareaResponse>,
+    tareas: List<TareaResponseDTO>,
     onDeleteTarea: (String) -> Unit, // Función para manejar la eliminación
     onToggleComplete: (String, EstadoTarea) -> Unit // Función para manejar el cambio de estado
 ) {
@@ -179,7 +179,7 @@ fun ListaDeTareas(
 
 @Composable
 fun TareaItem(
-    tarea: TareaResponse,
+    tarea: TareaResponseDTO,
     onDelete: () -> Unit, // Función para manejar la eliminación
     onToggleComplete: (EstadoTarea) -> Unit // Función para manejar el cambio de estado
 ) {

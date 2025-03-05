@@ -86,22 +86,22 @@ fun Registro(modifier: Modifier, navController: NavController) {
                             .getRetrofit()
                             .register(
                                 UsuarioRequest(
-                                textUsername,
-                                textEmail,
-                                textPassword,
-                                textPasswordRepeat,
-                                textTelefono,
-                                textCalle,
-                                textNum,
-                                textProvincia,
+                                    textUsername,
+                                    textEmail,
+                                    textPassword,
+                                    textPasswordRepeat,
+                                    textTelefono,
+                                    textCalle,
+                                    textNum,
+                                    textProvincia,
                                     textMunicipio,
-                                textCp
+                                    textCp
                                 )
                             )
                         if (response.isSuccessful) {
                             usuarioResponse = response.body()?.let {
                                 UsuarioResponse(
-                                    it._id,
+                                    it._id.toString(),
                                     it.username,
                                     it.password,
                                     it.email,

@@ -19,10 +19,18 @@ data class TareaResponse(
     var titulo: String,
     val descripcion: String,
     val estado: EstadoTarea,
-    val fecha_created: Date,
+    val fecha_created: Date
 ) {
     override fun toString(): String {
         return "Usuario\n" +
                 "id: $_id\nusername: $username\npassword: $titulo\nemail: $descripcion\ntelefono: $estado\ndirección: $fecha_created"
     }
 }
+
+data class TareaResponseDTO(
+    val username: String,
+    var titulo: String,
+    val descripcion: String,
+    val estado: EstadoTarea,
+    val fecha_created: Date
+)

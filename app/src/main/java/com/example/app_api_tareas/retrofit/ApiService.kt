@@ -5,6 +5,7 @@ import com.example.app_api_tareas.model.LoginRequest
 import com.example.app_api_tareas.model.LoginResponse
 import com.example.app_api_tareas.model.TareaRequest
 import com.example.app_api_tareas.model.TareaResponse
+import com.example.app_api_tareas.model.TareaResponseDTO
 import com.example.app_api_tareas.model.UsuarioRequest
 import com.example.app_api_tareas.model.UsuarioResponse
 import retrofit2.Response
@@ -31,7 +32,7 @@ interface ApiService {
     @GET("tareas/{username}")
     suspend fun obtenerTareas(
         @Header("Authorization") token: String,
-        @Path("username") username: String): Response<List<TareaResponse>>
+        @Path("username") username: String): Response<List<TareaResponseDTO>>
 
     @PUT("tareas/{titulo}")
     suspend fun cambiarEstado(@Header("Authorization") token: String,
