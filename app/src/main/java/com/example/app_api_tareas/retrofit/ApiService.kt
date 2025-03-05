@@ -38,7 +38,7 @@ interface ApiService {
                               @Path("titulo") titulo: String,
                               @Body nuevoEstado: EstadoTarea): Response<TareaResponse>
 
-    @DELETE("tareas/{titulo}")
+    @DELETE("tareas/{titulo}/cambiar-estado")
     suspend fun borrarTarea(@Header("Authorization") token: String,
                             @Path("titulo") titulo: String): Response<Unit>
 
