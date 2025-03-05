@@ -1,5 +1,6 @@
 package com.example.app_api_tareas.retrofit
 
+import com.example.app_api_tareas.model.EstadoTarea
 import com.example.app_api_tareas.model.LoginRequest
 import com.example.app_api_tareas.model.LoginResponse
 import com.example.app_api_tareas.model.TareaRequest
@@ -34,7 +35,8 @@ interface ApiService {
 
     @PUT("tareas/{titulo}")
     suspend fun cambiarEstado(@Header("Authorization") token: String,
-                              @Path("titulo") titulo: String): Response<TareaResponse>
+                              @Path("titulo") titulo: String,
+                              @Body nuevoEstado: EstadoTarea): Response<TareaResponse>
 
     @DELETE("tareas/{titulo}")
     suspend fun borrarTarea(@Header("Authorization") token: String,

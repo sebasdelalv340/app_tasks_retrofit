@@ -38,6 +38,7 @@ import androidx.navigation.NavController
 import com.example.app_api_tareas.model.EstadoTarea
 import com.example.app_api_tareas.model.TareaResponse
 import com.example.app_api_tareas.retrofit.RetrofitClient
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
@@ -85,7 +86,7 @@ fun MisTareas(modifier: Modifier, navController: NavController) {
 
     // Función para borrar una tarea
     fun borrarTarea(titulo: String) {
-        scope.launch {
+        scope.launch(Dispatchers.IO) {
             try {
                 val response = RetrofitClient.getRetrofit().borrarTarea("Bearer $token", titulo)
                 if (response.isSuccessful) {
@@ -101,10 +102,10 @@ fun MisTareas(modifier: Modifier, navController: NavController) {
     }
 
     // Función para cambiar el estado de una tarea
-    fun cambiarEstadoTarea(titulo: String) {
-        scope.launch {
+    fun cambiarEstadoTarea(titulo: String, nuevoEstado: EstadoTarea) {
+        scope.launch(Dispatchers.IO) {
             try {
-                val response = RetrofitClient.getRetrofit().cambiarEstado("Bearer $token", titulo)
+                val response = RetrofitClient.getRetrofit().cambiarEstado("Bearer $token", titulo, nuevoEstado)
                 if (response.isSuccessful) {
                     // Recargar la lista de tareas después de cambiar el estado
                     cargarTareas()
@@ -136,12 +137,14 @@ fun MisTareas(modifier: Modifier, navController: NavController) {
                 ListaDeTareas(
                     tareas = tareas,
                     onDeleteTarea = { titulo -> borrarTarea(titulo) }, // Pasar la función de borrado
-                    onToggleComplete = { titulo ->
-                        cambiarEstadoTarea(titulo) // Pasar la función de cambio de estado
+                    onToggleComplete = { titulo, nuevoEstado ->
+                        cambiarEstadoTarea(titulo, nuevoEstado) // Pasar el título y el nuevo estado
                     }
                 )
             }
         }
+
+        MyButton("Registrar tarea", 30) { navController.navigate("registroTarea") }
 
         Button(onClick = {
             sessionManager.clearSession()
@@ -159,15 +162,15 @@ fun MisTareas(modifier: Modifier, navController: NavController) {
 fun ListaDeTareas(
     tareas: List<TareaResponse>,
     onDeleteTarea: (String) -> Unit, // Función para manejar la eliminación
-    onToggleComplete: (String) -> Unit // Función para manejar el cambio de estado
+    onToggleComplete: (String, EstadoTarea) -> Unit // Función para manejar el cambio de estado
 ) {
     LazyColumn {
         items(tareas) { tarea ->
             TareaItem(
                 tarea = tarea,
                 onDelete = { onDeleteTarea(tarea.titulo) }, // Pasar el título de la tarea
-                onToggleComplete = {
-                    onToggleComplete(tarea.titulo) // Pasar el título y el nuevo estado
+                onToggleComplete = { nuevoEstado ->
+                    onToggleComplete(tarea.titulo, nuevoEstado) // Pasar el título y el nuevo estado
                 }
             )
         }

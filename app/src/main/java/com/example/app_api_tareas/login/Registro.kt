@@ -138,6 +138,8 @@ fun Registro(modifier: Modifier, navController: NavController) {
             )
         }
 
+        MyButton("Atrás", 30) { navController.navigate("login") }
+
         if (openDialog) {
             AlertDialog(
                 onDismissRequest = {

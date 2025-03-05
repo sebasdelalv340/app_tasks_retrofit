@@ -8,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.app_api_tareas.login.Login
 import com.example.app_api_tareas.login.MisTareas
 import com.example.app_api_tareas.login.Registro
+import com.example.app_api_tareas.login.RegistroTarea
 
 @Composable
 fun AppNavigation(modifier: Modifier) {
@@ -23,6 +24,10 @@ fun AppNavigation(modifier: Modifier) {
         composable("misTareas")
         {
             MisTareas(modifier, navControlador)
+        }
+        composable("registroTarea")
+        {
+            RegistroTarea(modifier, navControlador)
         }
 
     }
