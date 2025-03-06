@@ -4,7 +4,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
-    private const val BASE_URL = "https://app-adat-n8rf.onrender.com/"
+    private const val BASE_URL = "https://api-rest-segura-xzb1.onrender.com/"
 
     fun getRetrofit(): ApiService {
         return Retrofit.Builder()

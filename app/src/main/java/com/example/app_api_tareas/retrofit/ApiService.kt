@@ -1,10 +1,9 @@
 package com.example.app_api_tareas.retrofit
 
-import com.example.app_api_tareas.model.EstadoTarea
+import com.example.app_api_tareas.model.Estado
 import com.example.app_api_tareas.model.LoginRequest
 import com.example.app_api_tareas.model.LoginResponse
 import com.example.app_api_tareas.model.TareaRequest
-import com.example.app_api_tareas.model.TareaResponse
 import com.example.app_api_tareas.model.TareaResponseDTO
 import com.example.app_api_tareas.model.UsuarioRequest
 import com.example.app_api_tareas.model.UsuarioResponse
@@ -20,28 +19,27 @@ import retrofit2.http.Path
 interface ApiService {
 
     @POST("usuarios/login")
-    suspend fun login(@Body request: LoginRequest): Response<LoginResponse>
+    suspend fun login(@Body request: LoginRequest): Response<LoginResponse>?
 
     @POST("usuarios/register")
-    suspend fun register(@Body request: UsuarioRequest): Response<UsuarioResponse>
+    suspend fun register(@Body request: UsuarioRequest): Response<UsuarioResponse>?
 
     @POST("tareas/register")
     suspend fun registerTarea(@Header("Authorization") token: String,
-                              @Body request: TareaRequest): Response<TareaResponse>
+                              @Body request: TareaRequest): Response<TareaResponseDTO>?
 
     @GET("tareas/{username}")
-    suspend fun obtenerTareas(
-        @Header("Authorization") token: String,
-        @Path("username") username: String): Response<List<TareaResponseDTO>>
+    suspend fun obtenerTareas(@Header("Authorization") token: String,
+                              @Path("username") username: String): Response<List<TareaResponseDTO>>?
 
-    @PUT("tareas/{titulo}")
+    @PUT("tareas/{titulo}/cambiar-estado")
     suspend fun cambiarEstado(@Header("Authorization") token: String,
                               @Path("titulo") titulo: String,
-                              @Body nuevoEstado: EstadoTarea): Response<TareaResponse>
+                              @Body nuevoEstado: Estado): Response<TareaResponseDTO>?
 
-    @DELETE("tareas/{titulo}/cambiar-estado")
+    @DELETE("tareas/{titulo}")
     suspend fun borrarTarea(@Header("Authorization") token: String,
-                            @Path("titulo") titulo: String): Response<Unit>
+                            @Path("titulo") titulo: String): Response<Unit>?
 
 
 }

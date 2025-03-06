@@ -45,7 +45,7 @@ fun Registro(modifier: Modifier, navController: NavController) {
     var textMunicipio by rememberSaveable { mutableStateOf("") }
     var textCp by rememberSaveable { mutableStateOf("") }
 
-    var usuarioResponse by rememberSaveable { mutableStateOf<UsuarioResponse?>(null) }
+    var usuarioBody by rememberSaveable { mutableStateOf("") }
 
     var errorBody by rememberSaveable { mutableStateOf("") }
     var errorCode by rememberSaveable { mutableStateOf("") }
@@ -98,27 +98,18 @@ fun Registro(modifier: Modifier, navController: NavController) {
                                     textCp
                                 )
                             )
-                        if (response.isSuccessful) {
-                            usuarioResponse = response.body()?.let {
-                                UsuarioResponse(
-                                    it._id.toString(),
-                                    it.username,
-                                    it.password,
-                                    it.email,
-                                    it.telefono,
-                                    it.direccion,
-                                    it.roles
-                                    )
+                        if (response != null) {
+                            if (response.isSuccessful) {
+                                usuarioBody = response.body().toString()
+                                errorCode = response.code().toString()
+                                resultadoRespuesta = true
+                            } else {
+                                errorCode = response.code().toString()
+                                errorBody = response.errorBody()?.string() ?: "Error desconocido"
+                                resultadoRespuesta = false
                             }
-                            errorCode = response.code().toString()
-                            resultadoRespuesta = true
-                        } else {
-                            errorCode = response.code().toString()
-                            errorBody = response.errorBody()?.string() ?: "Error desconocido"
-                            resultadoRespuesta = false
                         }
                     } catch (e: Exception) {
-                        usuarioResponse = null
                         errorBody = "Error en la red: ${e.localizedMessage}"
                     }
                     openDialog = true
@@ -155,7 +146,7 @@ fun Registro(modifier: Modifier, navController: NavController) {
                         verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text("Code: $errorCode\n")
                         if (resultadoRespuesta) {
-                            Text("Mensaje: $usuarioResponse")
+                            Text("Mensaje: $usuarioBody")
                         } else {
                             Text("Mensaje: $errorBody")
                         }

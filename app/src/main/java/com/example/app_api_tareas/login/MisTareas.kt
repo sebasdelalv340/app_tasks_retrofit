@@ -35,7 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.app_api_tareas.model.EstadoTarea
+import com.example.app_api_tareas.model.Estado
 import com.example.app_api_tareas.model.TareaResponseDTO
 import com.example.app_api_tareas.retrofit.RetrofitClient
 import kotlinx.coroutines.Dispatchers
@@ -63,10 +63,12 @@ fun MisTareas(modifier: Modifier, navController: NavController) {
 
                 try {
                     val response = RetrofitClient.getRetrofit().obtenerTareas("Bearer $token", username)
-                    if (response.isSuccessful) {
-                        tareas = response.body() ?: emptyList()
-                    } else {
-                        errorMessage = "Error al obtener las tareas: ${response.errorBody()?.string()}"
+                    if (response != null) {
+                        if (response.isSuccessful) {
+                            tareas = response.body() ?: emptyList()
+                        } else {
+                            errorMessage = "Error al obtener las tareas: ${response.errorBody()?.string()}"
+                        }
                     }
                 } catch (e: Exception) {
                     errorMessage = "Error en la red: ${e.localizedMessage}"
@@ -89,11 +91,13 @@ fun MisTareas(modifier: Modifier, navController: NavController) {
         scope.launch(Dispatchers.IO) {
             try {
                 val response = RetrofitClient.getRetrofit().borrarTarea("Bearer $token", titulo)
-                if (response.isSuccessful) {
-                    // Recargar la lista de tareas después de borrar
-                    cargarTareas()
-                } else {
-                    errorMessage = "Error al borrar la tarea: ${response.errorBody()?.string()}"
+                if (response != null) {
+                    if (response.isSuccessful) {
+                        // Recargar la lista de tareas después de borrar
+                        cargarTareas()
+                    } else {
+                        errorMessage = "Error al borrar la tarea: ${response.errorBody()?.string()}"
+                    }
                 }
             } catch (e: Exception) {
                 errorMessage = "Error en la red: ${e.localizedMessage}"
@@ -102,15 +106,17 @@ fun MisTareas(modifier: Modifier, navController: NavController) {
     }
 
     // Función para cambiar el estado de una tarea
-    fun cambiarEstadoTarea(titulo: String, nuevoEstado: EstadoTarea) {
+    fun cambiarEstadoTarea(titulo: String, nuevoEstado: Estado) {
         scope.launch(Dispatchers.IO) {
             try {
                 val response = RetrofitClient.getRetrofit().cambiarEstado("Bearer $token", titulo, nuevoEstado)
-                if (response.isSuccessful) {
-                    // Recargar la lista de tareas después de cambiar el estado
-                    cargarTareas()
-                } else {
-                    errorMessage = "Error al cambiar el estado de la tarea: ${response.errorBody()?.string()}"
+                if (response != null) {
+                    if (response.isSuccessful) {
+                        // Recargar la lista de tareas después de cambiar el estado
+                        cargarTareas()
+                    } else {
+                        errorMessage = "Error al cambiar el estado de la tarea: ${response.errorBody()?.string()}"
+                    }
                 }
             } catch (e: Exception) {
                 errorMessage = "Error en la red: ${e.localizedMessage}"
@@ -126,32 +132,42 @@ fun MisTareas(modifier: Modifier, navController: NavController) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        if (isLoading) {
-            CircularProgressIndicator()
-        } else if (errorMessage != null) {
-            Text(text = errorMessage!!, color = Color.Red)
-        } else {
-            if (tareas.isEmpty()) {
-                Text("No hay tareas disponibles")
+        // Contenedor para la lista de tareas
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
+            if (isLoading) {
+                CircularProgressIndicator()
+            } else if (errorMessage != null) {
+                Text(text = errorMessage!!, color = Color.Red)
             } else {
-                ListaDeTareas(
-                    tareas = tareas,
-                    onDeleteTarea = { titulo -> borrarTarea(titulo) }, // Pasar la función de borrado
-                    onToggleComplete = { titulo, nuevoEstado ->
-                        cambiarEstadoTarea(titulo, nuevoEstado) // Pasar el título y el nuevo estado
-                    }
-                )
+                if (tareas.isEmpty()) {
+                    Text("No hay tareas disponibles")
+                } else {
+                    ListaDeTareas(
+                        tareas = tareas,
+                        onDeleteTarea = { titulo -> borrarTarea(titulo) }, // Pasar la función de borrado
+                        onToggleComplete = { titulo, nuevoEstado ->
+                            cambiarEstadoTarea(
+                                titulo,
+                                nuevoEstado
+                            ) // Pasar el título y el nuevo estado
+                        }
+                    )
+                }
             }
         }
 
         MyButton("Registrar tarea", 30) { navController.navigate("registroTarea") }
 
-        Button(onClick = {
+        Button(
+            onClick = {
             sessionManager.clearSession()
             navController.navigate("login") {
-                popUpTo("myTasks") { inclusive = true }
+                popUpTo("misTareas") { inclusive = true }
+                }
             }
-        }) {
+        ) {
             Text("Cerrar sesión")
         }
     }
@@ -162,7 +178,7 @@ fun MisTareas(modifier: Modifier, navController: NavController) {
 fun ListaDeTareas(
     tareas: List<TareaResponseDTO>,
     onDeleteTarea: (String) -> Unit, // Función para manejar la eliminación
-    onToggleComplete: (String, EstadoTarea) -> Unit // Función para manejar el cambio de estado
+    onToggleComplete: (String, Estado) -> Unit // Función para manejar el cambio de estado
 ) {
     LazyColumn {
         items(tareas) { tarea ->
@@ -181,7 +197,7 @@ fun ListaDeTareas(
 fun TareaItem(
     tarea: TareaResponseDTO,
     onDelete: () -> Unit, // Función para manejar la eliminación
-    onToggleComplete: (EstadoTarea) -> Unit // Función para manejar el cambio de estado
+    onToggleComplete: (Estado) -> Unit // Función para manejar el cambio de estado
 ) {
     Card(
         modifier = Modifier
@@ -198,10 +214,10 @@ fun TareaItem(
         ) {
             // Checkbox para marcar la tarea como completada
             Checkbox(
-                checked = tarea.estado == EstadoTarea.COMPLETADA, // Estado actual de la tarea
+                checked = tarea.estado == Estado.COMPLETADA, // Estado actual de la tarea
                 onCheckedChange = { isChecked ->
                     // Cambiar el estado según el valor del Checkbox
-                    val nuevoEstado = if (isChecked) EstadoTarea.COMPLETADA else EstadoTarea.PENDIENTE
+                    val nuevoEstado = if (isChecked) Estado.COMPLETADA else Estado.PENDIENTE
                     onToggleComplete(nuevoEstado)
                 }
             )
@@ -221,7 +237,7 @@ fun TareaItem(
                 )
                 Text(
                     text = tarea.estado.toString(), // Mostrar el estado como texto
-                    color = if (tarea.estado == EstadoTarea.COMPLETADA) Color.Green else Color.Red,
+                    color = if (tarea.estado == Estado.COMPLETADA) Color.Green else Color.Red,
                     fontSize = 14.sp
                 )
             }

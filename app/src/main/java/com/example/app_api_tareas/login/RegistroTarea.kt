@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.app_api_tareas.model.TareaRequest
 import com.example.app_api_tareas.model.TareaResponse
+import com.example.app_api_tareas.model.TareaResponseDTO
 import com.example.app_api_tareas.retrofit.RetrofitClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -36,8 +37,6 @@ import kotlinx.coroutines.launch
 fun RegistroTarea(modifier: Modifier, navController: NavController) {
     var textTitulo by rememberSaveable { mutableStateOf("") }
     var textDescripcion by rememberSaveable { mutableStateOf("") }
-
-    var tareaResponse by rememberSaveable { mutableStateOf<TareaResponse?>(null) }
 
     val context = LocalContext.current
     val sessionManager = remember { SessionManager(context) }
@@ -64,8 +63,8 @@ fun RegistroTarea(modifier: Modifier, navController: NavController) {
             fontWeight = FontWeight.Bold
         )
 
-        MyOutlinedText(textTitulo, "Usuario") { textTitulo = it}
-        MyOutlinedText(textDescripcion, "Password") { textDescripcion = it}
+        MyOutlinedText(textTitulo, "Titulo") { textTitulo = it}
+        MyOutlinedText(textDescripcion, "Descripción") { textDescripcion = it}
 
         Button(
             onClick = {
@@ -86,16 +85,6 @@ fun RegistroTarea(modifier: Modifier, navController: NavController) {
                         }
                         if (response != null) {
                             if (response.isSuccessful) {
-                                tareaResponse = response.body()?.let {
-                                    TareaResponse(
-                                        it._id,
-                                        it.username,
-                                        it.titulo,
-                                        it.descripcion,
-                                        it.estado,
-                                        it.fecha_created
-                                    )
-                                }
                                 errorCode = response.code().toString()
                                 resultadoRespuesta = true
                             } else {
@@ -105,7 +94,6 @@ fun RegistroTarea(modifier: Modifier, navController: NavController) {
                             }
                         }
                     } catch (e: Exception) {
-                        tareaResponse = null
                         errorBody = "Error en la red: ${e.localizedMessage}"
                     }
                     openDialog = true
@@ -125,7 +113,7 @@ fun RegistroTarea(modifier: Modifier, navController: NavController) {
             )
         }
 
-        MyButton("Atrás", 30) { navController.navigate("misTareas") }
+        MyButton("Ir a mis tareas", 30) { navController.navigate("misTareas") }
 
         if (openDialog) {
             AlertDialog(
@@ -142,7 +130,7 @@ fun RegistroTarea(modifier: Modifier, navController: NavController) {
                         verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text("Code: $errorCode\n")
                         if (resultadoRespuesta) {
-                            Text("Mensaje: $tareaResponse")
+                            Text("Mensaje: Tarea guardada")
                         } else {
                             Text("Mensaje: $errorBody")
                         }

@@ -2,7 +2,7 @@ package com.example.app_api_tareas.model
 
 import java.util.Date
 
-enum class EstadoTarea {
+enum class Estado {
     PENDIENTE,
     COMPLETADA
 }
@@ -18,7 +18,7 @@ data class TareaResponse(
     val username: String,
     var titulo: String,
     val descripcion: String,
-    val estado: EstadoTarea,
+    val estado: Estado,
     val fecha_created: Date
 ) {
     override fun toString(): String {
@@ -31,6 +31,6 @@ data class TareaResponseDTO(
     val username: String,
     var titulo: String,
     val descripcion: String,
-    val estado: EstadoTarea,
-    val fecha_created: Date
+    val estado: Estado,
+    val fecha_created: Date?
 )
