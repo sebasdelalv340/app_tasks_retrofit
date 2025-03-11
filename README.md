@@ -5,6 +5,7 @@
 Se trata de una aplicación sencilla que nos ayuda a tener un control sobre nuestras tareas.
 
 ## Estructura del proyecto
+
 ![estructura.jpg](assets/estructura.jpg)
 
 En model tenemos los diferentes data class y dto para realizar las peticiones a los endpoints con las clases qeu esperan recibir y la respuesta:
