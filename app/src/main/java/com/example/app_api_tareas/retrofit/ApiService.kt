@@ -19,27 +19,27 @@ import retrofit2.http.Path
 interface ApiService {
 
     @POST("usuarios/login")
-    suspend fun login(@Body request: LoginRequest): Response<LoginResponse>?
+    suspend fun login(@Body request: LoginRequest): Response<LoginResponse>
 
     @POST("usuarios/register")
-    suspend fun register(@Body request: UsuarioRequest): Response<UsuarioResponse>?
+    suspend fun register(@Body request: UsuarioRequest): Response<UsuarioResponse>
 
     @POST("tareas/register")
     suspend fun registerTarea(@Header("Authorization") token: String,
-                              @Body request: TareaRequest): Response<TareaResponseDTO>?
+                              @Body request: TareaRequest): Response<TareaResponseDTO>
 
     @GET("tareas/{username}")
     suspend fun obtenerTareas(@Header("Authorization") token: String,
-                              @Path("username") username: String): Response<List<TareaResponseDTO>>?
+                              @Path("username") username: String): Response<List<TareaResponseDTO>>
 
     @PUT("tareas/{titulo}/cambiar-estado")
     suspend fun cambiarEstado(@Header("Authorization") token: String,
                               @Path("titulo") titulo: String,
-                              @Body nuevoEstado: Estado): Response<TareaResponseDTO>?
+                              @Body nuevoEstado: Estado): Response<TareaResponseDTO>
 
     @DELETE("tareas/{titulo}")
     suspend fun borrarTarea(@Header("Authorization") token: String,
-                            @Path("titulo") titulo: String): Response<Unit>?
+                            @Path("titulo") titulo: String): Response<Unit>
 
 
 }

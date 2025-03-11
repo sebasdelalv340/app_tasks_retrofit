@@ -1,4 +1,4 @@
-package com.example.app_api_tareas.login
+package com.example.app_api_tareas.screen
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
@@ -14,12 +14,9 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,27 +24,22 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.app_api_tareas.model.LoginRequest
-import com.example.app_api_tareas.retrofit.RetrofitClient
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.example.app_api_tareas.viewmodel.LoginViewModel
 
 @Composable
 fun Login(modifier: Modifier, navController: NavController) {
     val context = LocalContext.current
     val sessionManager = remember { SessionManager(context) }
+    val viewModel: LoginViewModel = viewModel()
 
-    var textUser by rememberSaveable { mutableStateOf("")}
-    var textPassword by rememberSaveable {mutableStateOf("")}
-
-    val scope = rememberCoroutineScope()
-
-    var errorBody by rememberSaveable { mutableStateOf("") }
-    var errorCode by rememberSaveable { mutableStateOf("") }
-
-    var openDialog by rememberSaveable { mutableStateOf(false) }
+    // Observar los estados del ViewModel
+    val textUser by viewModel.textUser.collectAsState()
+    val textPassword by viewModel.textPassword.collectAsState()
+    val errorCode by viewModel.errorCode.collectAsState()
+    val errorBody by viewModel.errorBody.collectAsState()
+    val openDialog by viewModel.openDialog.collectAsState()
 
     Column(
         modifier = modifier
@@ -65,7 +57,7 @@ fun Login(modifier: Modifier, navController: NavController) {
             modifier = Modifier
                 .width(310.dp),
             value = textUser,
-            onValueChange = { textUser = it },
+            onValueChange = { viewModel.updateUser(it) },
             label = { Text("Usuario") },
             singleLine = true
         )
@@ -74,40 +66,14 @@ fun Login(modifier: Modifier, navController: NavController) {
             modifier = Modifier
                 .width(310.dp),
             value = textPassword,
-            onValueChange = {  textPassword = it },
+            onValueChange = {  viewModel.updatePassword(it) },
             label = { Text("Contraseña") },
             singleLine = true
         )
 
         MyButton("Iniciar sesión", 30) {
-            scope.launch(Dispatchers.IO) {
-                try {
-                    val response = RetrofitClient.getRetrofit().login(LoginRequest(textUser, textPassword))
-                    if (response != null) {
-                        if (response.isSuccessful) {
-
-                            errorCode = response.code().toString()
-
-                            // Guardar el username y el token en SharedPreferences
-                            response.body()?.let { loginResponse ->
-                                sessionManager.saveUserSession(textUser, loginResponse.token)
-                            }
-                            withContext(Dispatchers.Main) {
-                                textUser = ""
-                                textPassword = ""
-                                navController.navigate("misTareas")
-                            }
-                        } else {
-                            openDialog = true
-                            errorCode = response.code().toString()
-                            errorBody = response.errorBody()?.string() ?: "Error desconocido"
-
-                        }
-                    }
-                } catch (e: Exception) {
-                    openDialog = true
-                    errorBody = "Error en la red: ${e.localizedMessage}"
-                }
+            viewModel.login(sessionManager) {
+                navController.navigate("misTareas")
             }
         }
         MyButton("Registrarme", 30) { navController.navigate("registro") }
@@ -115,7 +81,7 @@ fun Login(modifier: Modifier, navController: NavController) {
         if (openDialog) {
             AlertDialog(
                 onDismissRequest = {
-                    openDialog = false
+                    viewModel.closeDialog()
                 },
                 title = {
                     Text(text = "Login")
@@ -131,8 +97,7 @@ fun Login(modifier: Modifier, navController: NavController) {
                 },
                 confirmButton = {
                     Button(onClick = {
-
-                        openDialog = false
+                        viewModel.closeDialog()
                     }) {
                         Text("Aceptar")
                     }

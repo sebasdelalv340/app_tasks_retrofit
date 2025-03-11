@@ -1,4 +1,4 @@
-package com.example.app_api_tareas.login
+package com.example.app_api_tareas.screen
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
@@ -14,6 +14,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -25,35 +26,35 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.app_api_tareas.model.UsuarioRequest
-import com.example.app_api_tareas.model.UsuarioResponse
 import com.example.app_api_tareas.retrofit.RetrofitClient
+import com.example.app_api_tareas.viewmodel.RegistroUserViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
 fun Registro(modifier: Modifier, navController: NavController) {
-    var textUsername by rememberSaveable { mutableStateOf("") }
-    var textPassword by rememberSaveable { mutableStateOf("") }
-    var textPasswordRepeat by rememberSaveable { mutableStateOf("") }
-    var textEmail by rememberSaveable { mutableStateOf("") }
-    var textTelefono by rememberSaveable { mutableStateOf("") }
-    var textCalle by rememberSaveable { mutableStateOf("") }
-    var textNum by rememberSaveable { mutableStateOf("") }
-    var textProvincia by rememberSaveable { mutableStateOf("") }
-    var textMunicipio by rememberSaveable { mutableStateOf("") }
-    var textCp by rememberSaveable { mutableStateOf("") }
+    val viewModel: RegistroUserViewModel = viewModel() // Obtener el ViewModel
 
-    var usuarioBody by rememberSaveable { mutableStateOf("") }
+    // Observar los estados del ViewModel
+    val textUsername by viewModel.textUsername.collectAsState()
+    val textPassword by viewModel.textPassword.collectAsState()
+    val textPasswordRepeat by viewModel.textPasswordRepeat.collectAsState()
+    val textEmail by viewModel.textEmail.collectAsState()
+    val textTelefono by viewModel.textTelefono.collectAsState()
+    val textCalle by viewModel.textCalle.collectAsState()
+    val textNum by viewModel.textNum.collectAsState()
+    val textProvincia by viewModel.textProvincia.collectAsState()
+    val textMunicipio by viewModel.textMunicipio.collectAsState()
+    val textCp by viewModel.textCp.collectAsState()
 
-    var errorBody by rememberSaveable { mutableStateOf("") }
-    var errorCode by rememberSaveable { mutableStateOf("") }
-
-    var openDialog by rememberSaveable { mutableStateOf(false) }
-    var resultadoRespuesta by rememberSaveable { mutableStateOf(false) }
-
-    val scope = rememberCoroutineScope()
+    val usuarioBody by viewModel.usuarioBody.collectAsState()
+    val errorBody by viewModel.errorBody.collectAsState()
+    val errorCode by viewModel.errorCode.collectAsState()
+    val openDialog by viewModel.openDialog.collectAsState()
+    val resultadoRespuesta by viewModel.resultadoRespuesta.collectAsState()
 
     Column(
         modifier = modifier
@@ -67,53 +68,20 @@ fun Registro(modifier: Modifier, navController: NavController) {
             fontWeight = FontWeight.Bold
         )
 
-        MyOutlinedText(textUsername, "Usuario") { textUsername = it}
-        MyOutlinedText(textPassword, "Password") { textPassword = it}
-        MyOutlinedText(textPasswordRepeat, "Repeat password") { textPasswordRepeat = it}
-        MyOutlinedText(textEmail, "Email") { textEmail = it}
-        MyOutlinedText(textTelefono, "Teléfono") { textTelefono = it}
-        MyOutlinedText(textCalle, "Calle") { textCalle = it}
-        MyOutlinedText(textNum, "Número") { textNum = it}
-        MyOutlinedText(textProvincia, "Provincia") { textProvincia = it}
-        MyOutlinedText(textMunicipio, "Municipio") { textMunicipio = it}
-        MyOutlinedText(textCp, "CP") { textCp = it}
+        MyOutlinedText(textUsername, "Usuario") { viewModel.updateUsername(it) }
+        MyOutlinedText(textPassword, "Password") { viewModel.updatePassword(it) }
+        MyOutlinedText(textPasswordRepeat, "Repeat password") { viewModel.updatePasswordRepeat(it) }
+        MyOutlinedText(textEmail, "Email") { viewModel.updateEmail(it) }
+        MyOutlinedText(textTelefono, "Teléfono") { viewModel.updateTelefono(it) }
+        MyOutlinedText(textCalle, "Calle") { viewModel.updateCalle(it) }
+        MyOutlinedText(textNum, "Número") { viewModel.updateNum(it) }
+        MyOutlinedText(textProvincia, "Provincia") { viewModel.updateProvincia(it) }
+        MyOutlinedText(textMunicipio, "Municipio") { viewModel.updateMunicipio(it) }
+        MyOutlinedText(textCp, "CP") { viewModel.updateCp(it) }
 
         Button(
             onClick = {
-                scope.launch(Dispatchers.IO) {
-                    try {
-                        val response = RetrofitClient
-                            .getRetrofit()
-                            .register(
-                                UsuarioRequest(
-                                    textUsername,
-                                    textEmail,
-                                    textPassword,
-                                    textPasswordRepeat,
-                                    textTelefono,
-                                    textCalle,
-                                    textNum,
-                                    textProvincia,
-                                    textMunicipio,
-                                    textCp
-                                )
-                            )
-                        if (response != null) {
-                            if (response.isSuccessful) {
-                                usuarioBody = response.body().toString()
-                                errorCode = response.code().toString()
-                                resultadoRespuesta = true
-                            } else {
-                                errorCode = response.code().toString()
-                                errorBody = response.errorBody()?.string() ?: "Error desconocido"
-                                resultadoRespuesta = false
-                            }
-                        }
-                    } catch (e: Exception) {
-                        errorBody = "Error en la red: ${e.localizedMessage}"
-                    }
-                    openDialog = true
-                }
+                viewModel.register() // Llamar a la función de registro
             },
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.Transparent,
@@ -134,7 +102,7 @@ fun Registro(modifier: Modifier, navController: NavController) {
         if (openDialog) {
             AlertDialog(
                 onDismissRequest = {
-                    openDialog = false
+                    viewModel.closeDialog()
                 },
                 title = {
                     Text(text = "Registro")
@@ -154,8 +122,7 @@ fun Registro(modifier: Modifier, navController: NavController) {
                 },
                 confirmButton = {
                     Button(onClick = {
-
-                        openDialog = false
+                        viewModel.closeDialog()
                     }) {
                         Text("Aceptar")
                     }

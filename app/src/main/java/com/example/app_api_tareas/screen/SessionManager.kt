@@ -1,4 +1,4 @@
-package com.example.app_api_tareas.login
+package com.example.app_api_tareas.screen
 
 import android.content.Context
 import android.content.SharedPreferences

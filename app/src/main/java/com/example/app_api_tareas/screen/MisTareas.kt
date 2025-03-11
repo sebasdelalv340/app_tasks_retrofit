@@ -1,4 +1,4 @@
-package com.example.app_api_tareas.login
+package com.example.app_api_tareas.screen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,6 +20,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,94 +35,32 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.app_api_tareas.model.Estado
 import com.example.app_api_tareas.model.TareaResponseDTO
 import com.example.app_api_tareas.retrofit.RetrofitClient
+import com.example.app_api_tareas.viewmodel.MisTareasViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
 fun MisTareas(modifier: Modifier, navController: NavController) {
+    val viewModel: MisTareasViewModel = viewModel() // Obtener el ViewModel
+
+    // Observar los estados del ViewModel
+    val tareas by viewModel.tareas.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val errorMessage by viewModel.errorMessage.collectAsState()
+
     val context = LocalContext.current
     val sessionManager = remember { SessionManager(context) }
     val username = sessionManager.getUsername()
     val token = sessionManager.getToken()
 
-    var tareas by rememberSaveable { mutableStateOf<List<TareaResponseDTO>>(emptyList()) }
-    var isLoading by rememberSaveable { mutableStateOf(false) }
-    var errorMessage by rememberSaveable { mutableStateOf<String?>(null) }
-
-    val scope = rememberCoroutineScope()
-
-    // Función para cargar las tareas
-    fun cargarTareas() {
-        scope.launch(Dispatchers.IO) {
-            if (username != null && token != null) {
-                isLoading = true
-                errorMessage = null
-
-                try {
-                    val response = RetrofitClient.getRetrofit().obtenerTareas("Bearer $token", username)
-                    if (response != null) {
-                        if (response.isSuccessful) {
-                            tareas = response.body() ?: emptyList()
-                        } else {
-                            errorMessage = "Error al obtener las tareas: ${response.errorBody()?.string()}"
-                        }
-                    }
-                } catch (e: Exception) {
-                    errorMessage = "Error en la red: ${e.localizedMessage}"
-                } finally {
-                    isLoading = false
-                }
-            } else {
-                errorMessage = "No se encontró el nombre de usuario"
-            }
-        }
-    }
-
     // Cargar las tareas al iniciar la pantalla
     LaunchedEffect(Unit) {
-        cargarTareas()
-    }
-
-    // Función para borrar una tarea
-    fun borrarTarea(titulo: String) {
-        scope.launch(Dispatchers.IO) {
-            try {
-                val response = RetrofitClient.getRetrofit().borrarTarea("Bearer $token", titulo)
-                if (response != null) {
-                    if (response.isSuccessful) {
-                        // Recargar la lista de tareas después de borrar
-                        cargarTareas()
-                    } else {
-                        errorMessage = "Error al borrar la tarea: ${response.errorBody()?.string()}"
-                    }
-                }
-            } catch (e: Exception) {
-                errorMessage = "Error en la red: ${e.localizedMessage}"
-            }
-        }
-    }
-
-    // Función para cambiar el estado de una tarea
-    fun cambiarEstadoTarea(titulo: String, nuevoEstado: Estado) {
-        scope.launch(Dispatchers.IO) {
-            try {
-                val response = RetrofitClient.getRetrofit().cambiarEstado("Bearer $token", titulo, nuevoEstado)
-                if (response != null) {
-                    if (response.isSuccessful) {
-                        // Recargar la lista de tareas después de cambiar el estado
-                        cargarTareas()
-                    } else {
-                        errorMessage = "Error al cambiar el estado de la tarea: ${response.errorBody()?.string()}"
-                    }
-                }
-            } catch (e: Exception) {
-                errorMessage = "Error en la red: ${e.localizedMessage}"
-            }
-        }
+        viewModel.cargarTareas(username, token)
     }
 
     // Mostrar la interfaz de usuario
@@ -146,12 +85,9 @@ fun MisTareas(modifier: Modifier, navController: NavController) {
                 } else {
                     ListaDeTareas(
                         tareas = tareas,
-                        onDeleteTarea = { titulo -> borrarTarea(titulo) }, // Pasar la función de borrado
+                        onDeleteTarea = { titulo -> viewModel.borrarTarea(username, token, titulo) }, // Pasar la función de borrado
                         onToggleComplete = { titulo, nuevoEstado ->
-                            cambiarEstadoTarea(
-                                titulo,
-                                nuevoEstado
-                            ) // Pasar el título y el nuevo estado
+                            viewModel.cambiarEstadoTarea(username, token, titulo, nuevoEstado) // Pasar el título y el nuevo estado
                         }
                     )
                 }

@@ -1,4 +1,4 @@
-package com.example.app_api_tareas.login
+package com.example.app_api_tareas.screen
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
@@ -12,6 +12,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,31 +26,30 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.app_api_tareas.model.TareaRequest
-import com.example.app_api_tareas.model.TareaResponse
-import com.example.app_api_tareas.model.TareaResponseDTO
 import com.example.app_api_tareas.retrofit.RetrofitClient
+import com.example.app_api_tareas.viewmodel.RegistroTareaViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
 fun RegistroTarea(modifier: Modifier, navController: NavController) {
-    var textTitulo by rememberSaveable { mutableStateOf("") }
-    var textDescripcion by rememberSaveable { mutableStateOf("") }
+    val viewModel: RegistroTareaViewModel = viewModel() // Obtener el ViewModel
+
+    // Observar los estados del ViewModel
+    val textTitulo by viewModel.textTitulo.collectAsState()
+    val textDescripcion by viewModel.textDescripcion.collectAsState()
+    val errorBody by viewModel.errorBody.collectAsState()
+    val errorCode by viewModel.errorCode.collectAsState()
+    val openDialog by viewModel.openDialog.collectAsState()
+    val resultadoRespuesta by viewModel.resultadoRespuesta.collectAsState()
 
     val context = LocalContext.current
     val sessionManager = remember { SessionManager(context) }
     val username = sessionManager.getUsername()
     val token = sessionManager.getToken()
-
-    var errorBody by rememberSaveable { mutableStateOf("") }
-    var errorCode by rememberSaveable { mutableStateOf("") }
-
-    var openDialog by rememberSaveable { mutableStateOf(false) }
-    var resultadoRespuesta by rememberSaveable { mutableStateOf(false) }
-
-    val scope = rememberCoroutineScope()
 
     Column(
         modifier = modifier
@@ -63,41 +63,12 @@ fun RegistroTarea(modifier: Modifier, navController: NavController) {
             fontWeight = FontWeight.Bold
         )
 
-        MyOutlinedText(textTitulo, "Titulo") { textTitulo = it}
-        MyOutlinedText(textDescripcion, "Descripción") { textDescripcion = it}
+        MyOutlinedText(textTitulo, "Titulo") { viewModel.updateTitulo(it) }
+        MyOutlinedText(textDescripcion, "Descripción") { viewModel.updateDescripcion(it) }
 
         Button(
             onClick = {
-                scope.launch(Dispatchers.IO) {
-                    try {
-                        val response = username?.let {
-                            TareaRequest(
-                                it,
-                                textTitulo,
-                                textDescripcion
-                            )
-                        }?.let {
-                            RetrofitClient
-                                .getRetrofit()
-                                .registerTarea("Bearer $token",
-                                    it
-                                )
-                        }
-                        if (response != null) {
-                            if (response.isSuccessful) {
-                                errorCode = response.code().toString()
-                                resultadoRespuesta = true
-                            } else {
-                                errorCode = response.code().toString()
-                                errorBody = response.errorBody()?.string() ?: "Error desconocido"
-                                resultadoRespuesta = false
-                            }
-                        }
-                    } catch (e: Exception) {
-                        errorBody = "Error en la red: ${e.localizedMessage}"
-                    }
-                    openDialog = true
-                }
+                viewModel.registerTarea(username, token) // Llamar a la función de registro
             },
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.Transparent,
@@ -118,7 +89,7 @@ fun RegistroTarea(modifier: Modifier, navController: NavController) {
         if (openDialog) {
             AlertDialog(
                 onDismissRequest = {
-                    openDialog = false
+                    viewModel.closeDialog()
                 },
                 title = {
                     Text(text = "Registro")
@@ -138,8 +109,7 @@ fun RegistroTarea(modifier: Modifier, navController: NavController) {
                 },
                 confirmButton = {
                     Button(onClick = {
-
-                        openDialog = false
+                        viewModel.closeDialog()
                     }) {
                         Text("Aceptar")
                     }
