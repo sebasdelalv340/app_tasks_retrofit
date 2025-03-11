@@ -5,7 +5,7 @@
 Se trata de una aplicación sencilla que nos ayuda a tener un control sobre nuestras tareas.
 
 ## Estructura del proyecto
-![Interface ApiService](assets/apiService.png)
+![Estructura](assets/estructura.jpg)
  
 # Descripción de la API
 
