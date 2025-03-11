@@ -1,4 +1,6 @@
- # Descripción de la API
+# Proyecto conexión APP móvil con API
+ 
+# Descripción de la API
 
 Este proyecto consiste en una API que maneja tres documentos principales: **Usuario**, **Dirección** y **Tareas**. A continuación, se detallan cada uno de los documentos y sus respectivos campos.
 
@@ -119,120 +121,7 @@ Este documento representa las tareas asignadas a los usuarios.
   
 ---
 
-## Pruebas gestión de usuarios
 
-### Retrofit
-Es un object que contiene la url de nuestra api en render y nos devuelve un ApiService.
-![Object Retrofit](../../../DAM_2/Acceso_a_datos/API_REST_SEGURA/API_REST_SEGURA/assets/retrofit.png)
-
-### ApiService
-Es una interfaz que se encarga de las peticiones a nuestra api.
-![Interface ApiService](../../../DAM_2/Acceso_a_datos/API_REST_SEGURA/API_REST_SEGURA/assets/apiService.png)
-
-### Clases para login
-Son las clases que usamos para mandar la petición del login y para el *Response* del endpoint correspondiente.
-![Clases login](../../../DAM_2/Acceso_a_datos/API_REST_SEGURA/API_REST_SEGURA/assets/clases_login.png)
-
-### Clases para registro
-Son las clases que usamos para mandar la petición del registro y para el *Response* del endpoint.
-![Clases login](../../../DAM_2/Acceso_a_datos/API_REST_SEGURA/API_REST_SEGURA/assets/clases_registro.png)
-
-### Pruebas login
-Primero comprobamos que nuestra base de datos está vacía.
-![BD](../../../DAM_2/Acceso_a_datos/API_REST_SEGURA/API_REST_SEGURA/assets/comprobar_bd.png)
-
-Si intentamos loguearnos, lógicamente dará error ya que no existe ningún usuario registrado.
-![Login_intro_inexistente](../../../DAM_2/Acceso_a_datos/API_REST_SEGURA/API_REST_SEGURA/assets/intro_login_pepe.png)
-![Login_respuesta_inexistente](../../../DAM_2/Acceso_a_datos/API_REST_SEGURA/API_REST_SEGURA/assets/respuesta_login_pepe_incorrecto.png)
-
-Vamos a registrar un usuario de forma correcta para hacer las pruebas del login. Después probaremos los errores del registro.
-![Intro_user](../../../DAM_2/Acceso_a_datos/API_REST_SEGURA/API_REST_SEGURA/assets/intro_registro_correcto.png)
-![Respuesta_registro](../../../DAM_2/Acceso_a_datos/API_REST_SEGURA/API_REST_SEGURA/assets/respuesta_registro_correcto.png)
-
-Volvemos a nuestra pantalla de login.
-Vamos a intentar acceder introduciendo mal la constraseña: correcta(123) - incorrecta(1234).
-![Login_incorrecto](../../../DAM_2/Acceso_a_datos/API_REST_SEGURA/API_REST_SEGURA/assets/intro_login_pepe_incorrecto.png)
-![Login_incorrecto](../../../DAM_2/Acceso_a_datos/API_REST_SEGURA/API_REST_SEGURA/assets/respuesta_login_pepe_incorrecto.png)
-
-Para comprobar un login correcto, introducimos la contraseña correcta del mismo usuario: Contraseña -> 123.
-![Login_correcto](../../../DAM_2/Acceso_a_datos/API_REST_SEGURA/API_REST_SEGURA/assets/intro_login_pepe.png)
-![Login_correcto](../../../DAM_2/Acceso_a_datos/API_REST_SEGURA/API_REST_SEGURA/assets/comprobar_pepe_login.png)
-
----
-
-## Pruebas registro
-
-Ya hemos introducido un usuario **pepe**.
-Vamos a intentar introducir otro con el mismo nombre de usuario.
-![Registro_repetido](../../../DAM_2/Acceso_a_datos/API_REST_SEGURA/API_REST_SEGURA/assets/intro_registro_repetido.png)
-![Registro_repetido](../../../DAM_2/Acceso_a_datos/API_REST_SEGURA/API_REST_SEGURA/assets/respuesta_insert_repetido.png)
-
-Vamos a introducir un nuevo usuario para probar otros errores, en esta ocasión con la **Provincia**.
-![Registro_incorrecto](../../../DAM_2/Acceso_a_datos/API_REST_SEGURA/API_REST_SEGURA/assets/intro_registro_provincia.png)
-![Registro_repetido](../../../DAM_2/Acceso_a_datos/API_REST_SEGURA/API_REST_SEGURA/assets/respuesta_insert_provincia.png)
-
-Repetimos la misma acción, pero esta vez vamos a provocar que el error se produzca en el **Municipio**.
-![Registro_repetido](../../../DAM_2/Acceso_a_datos/API_REST_SEGURA/API_REST_SEGURA/assets/intro_registro_municipio.png)
-![Registro_repetido](../../../DAM_2/Acceso_a_datos/API_REST_SEGURA/API_REST_SEGURA/assets/respuesta_insert_municipio2.png)
-
-Por último, intentamos registrar al nuevo usuario que tenga guerra nos ha dado, ahora si, con los datos correctos.
-![Registro_correcto](../../../DAM_2/Acceso_a_datos/API_REST_SEGURA/API_REST_SEGURA/assets/intro_registro_municipio_correcto.png)
-![Registro_correcto](../../../DAM_2/Acceso_a_datos/API_REST_SEGURA/API_REST_SEGURA/assets/respuesta_registro_municipio_correcto.png)
-
----
-
-## Pruebas tareas
-
-Primero mostramos los dos tipos de usuarios en nuestra base de datos: USER y ADMIN.
-![Usuarios](../../../DAM_2/Acceso_a_datos/API_REST_SEGURA/API_REST_SEGURA/assets/users.png)
-
-### Pruebas USER
-Nuestro usuario **jose** es **USER**.
-Obtener sus tareas.
-![Usuarios](../../../DAM_2/Acceso_a_datos/API_REST_SEGURA/API_REST_SEGURA/assets/obtener_tarea_user.png)
-
-Marcar una tarea como COMPLETADA por **jose**.
-![Usuarios](../../../DAM_2/Acceso_a_datos/API_REST_SEGURA/API_REST_SEGURA/assets/user_tarea_completada.png)
-
-Eliminar una tarea propia.
-![Usuarios](../../../DAM_2/Acceso_a_datos/API_REST_SEGURA/API_REST_SEGURA/assets/user_borrar_tarea.png)
-
-Eliminar una tarea de otro usuario.
-![Usuarios](../../../DAM_2/Acceso_a_datos/API_REST_SEGURA/API_REST_SEGURA/assets/borrar_tarea_user_otro_user.png)
-
-Dar de alta una tarea para sí mismo.
-![Usuarios](../../../DAM_2/Acceso_a_datos/API_REST_SEGURA/API_REST_SEGURA/assets/tarea_registrada_user.png)
-
-Dar de alta una tarea para otro usuario.
-![Usuarios](../../../DAM_2/Acceso_a_datos/API_REST_SEGURA/API_REST_SEGURA/assets/user_tarea_user.png)
-
-### Pruebas ADMIN
-Nuestro usuario **sebas** es **ADMIN**.
-Obtener todas las tareas.
-![Usuarios](../../../DAM_2/Acceso_a_datos/API_REST_SEGURA/API_REST_SEGURA/assets/todas_tareas_admin.png)
-
-Eliminar cualquier tarea.
-![Usuarios](../../../DAM_2/Acceso_a_datos/API_REST_SEGURA/API_REST_SEGURA/assets/admin_borra_tarea_user.png)
-
-Dar de alta tarea para cualquier usuario.
-![Usuarios](../../../DAM_2/Acceso_a_datos/API_REST_SEGURA/API_REST_SEGURA/assets/admin_registra_tarea_user.png)
-
----
-
-## PRUEBAS SOBRE LA INTERFAZ + VIDEO
-En la entrega de la tarea se adjunta el video donde se realizan las pruebas sobre el usuario y las tareas.
-
-Despliegue de la API en render:
-![render.png](../../../DAM_2/Acceso_a_datos/API_REST_SEGURA/API_REST_SEGURA/assets/render.png)
-
-Estos son las peticiones que realiza la aplicación donde se incluye el token del usuario una vez logueado y que posteriormente veremos como lo almacenamos:
-![peticiones_tareas.png](../../../DAM_2/Acceso_a_datos/API_REST_SEGURA/API_REST_SEGURA/assets/peticiones_tareas.png)
-
-Cuando el usuario se autoriza en nuestra aplicación de forma correcta, almacenamos de forma local su username y token para usarlo posteriormente en las peticiones:
-![guardar_sesion.png](../../../DAM_2/Acceso_a_datos/API_REST_SEGURA/API_REST_SEGURA/assets/guardar_sesion.png)
-
-Una vez autorizado el usuario, la aplicación navega automáticamente a la ventana de sus tareas, realizando la petición correspondiente con el token, cargando así únicamente las tareas de dicho usuario:
-![cargar_tareas.png](../../../DAM_2/Acceso_a_datos/API_REST_SEGURA/API_REST_SEGURA/assets/cargar_tareas.png)
 
 
 
