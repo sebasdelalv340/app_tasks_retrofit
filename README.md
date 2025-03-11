@@ -5,7 +5,7 @@
 Se trata de una aplicación sencilla que nos ayuda a tener un control sobre nuestras tareas.
 
 ## Estructura del proyecto
-/assets/cargar_tareas.png
+![Interface ApiService](assets/apiService.png)
  
 # Descripción de la API
 
