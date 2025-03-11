@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.app_api_tareas.model.LoginRequest
 import com.example.app_api_tareas.retrofit.RetrofitClient
-import com.example.app_api_tareas.screen.SessionManager
+import com.example.app_api_tareas.session.SessionManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

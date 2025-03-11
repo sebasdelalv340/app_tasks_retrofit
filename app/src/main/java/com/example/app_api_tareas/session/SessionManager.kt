@@ -1,7 +1,8 @@
-package com.example.app_api_tareas.screen
+package com.example.app_api_tareas.session
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.core.content.edit
 
 class SessionManager(context: Context) {
     private val sharedPreferences: SharedPreferences =
@@ -14,10 +15,10 @@ class SessionManager(context: Context) {
 
     // Guardar el username y el token
     fun saveUserSession(username: String, token: String) {
-        val editor = sharedPreferences.edit()
-        editor.putString(KEY_USERNAME, username)
-        editor.putString(KEY_TOKEN, token)
-        editor.apply()
+        sharedPreferences.edit() {
+            putString(KEY_USERNAME, username)
+            putString(KEY_TOKEN, token)
+        }
     }
 
     // Obtener el username
@@ -32,8 +33,8 @@ class SessionManager(context: Context) {
 
     // Limpiar la sesión (para logout)
     fun clearSession() {
-        val editor = sharedPreferences.edit()
-        editor.clear()
-        editor.apply()
+        sharedPreferences.edit() {
+            clear()
+        }
     }
 }

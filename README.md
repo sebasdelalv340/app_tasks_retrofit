@@ -21,6 +21,9 @@ En retrofit tenemos nuestro object retrofit que nos dará la conexión con rende
 Aquí también guardamos una interfaz que se encarga de realizar las diferentes peticiones a la API.
 ![api_service.jpg](assets/api_service.jpg)
 
+En session, tenemos un SessionManager que recibe el contexto como parámetro y usa SharedPreferences para almacenar localmente el username y el token cuando el usuario se loguea para usarlo en futuras peticiones mientras la sesión esté activa.
+![sharedPreferences.jpg](assets/sharedPreferences.jpg)
+
 En screen guardamos las diferentes pantallas que contiene nuestra aplicación.
 Ejemplo:
 ![screen.jpg](assets/screen.jpg)
