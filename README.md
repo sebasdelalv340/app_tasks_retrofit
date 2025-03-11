@@ -5,7 +5,32 @@
 Se trata de una aplicación sencilla que nos ayuda a tener un control sobre nuestras tareas.
 
 ## Estructura del proyecto
-![Estructura](assets/estructura.jpg)
+![estructura.jpg](assets/estructura.jpg)
+
+En model tenemos los diferentes data class y dto para realizar las peticiones a los endpoints con las clases qeu esperan recibir y la respuesta:
+- Request y Response
+Ejemplo:
+![model.jpg](assets/model.jpg)
+
+En navegación tenemos un composable que se encarga de la navegación entre pantallas pasando un String.
+![navigation.jpg](assets/navigation.jpg)
+
+En retrofit tenemos nuestro object retrofit que nos dará la conexión con render y nos parsea los Json a clases y vicecersa.
+![retrofit.jpg](assets/retrofit.jpg)
+
+Aquí también guardamos una interfaz que se encarga de realizar las diferentes peticiones a la API.
+![api_service.jpg](assets/api_service.jpg)
+
+En screen guardamos las diferentes pantallas que contiene nuestra aplicación.
+Ejemplo:
+![screen.jpg](assets/screen.jpg)
+
+En viewmodel tenemos los distintos viewmodels para cada pantalla. Se encargan de manejar los estados de la UI, lógica de negocio y las corutinas para usar retrofit.
+Ejemplo:
+![viewmodel.jpg](assets/viewmodel.jpg)
+
+Por último, MainActivity. Simplemente crea una instancia del Activity al que le pasamos nuestro navegador dentro de un Scaffold que nos da estructura a nuestros layouts.
+![main_activity.jpg](assets/main_activity.jpg)
  
 # Descripción de la API
 
