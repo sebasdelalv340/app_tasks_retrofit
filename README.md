@@ -1,4 +1,11 @@
 # Proyecto conexión APP móvil con API
+
+# Descripción de la APP
+
+Se trata de una aplicación sencilla que nos ayuda a tener un control sobre nuestras tareas.
+
+## Estructura del proyecto
+
  
 # Descripción de la API
 
@@ -119,8 +126,6 @@ Este documento representa las tareas asignadas a los usuarios.
 3. **Validación de entradas**:
    - Se valida que los datos entrantes sean correctos.
   
----
-
 
 
 
